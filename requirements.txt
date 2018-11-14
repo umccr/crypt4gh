@@ -1,6 +1,0 @@
-pyYaml
-docopt
-cryptography
-ed25519
-pynacl
-bcrypt
