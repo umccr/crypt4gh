@@ -14,8 +14,8 @@ ifdef SYSLOG
 CFLAGS += -DHAS_SYSLOG
 endif
 
-HEADERS = utils.h config.h crypt4gh.h cli.h json.h $(wildcard jsmn/*.h)
-SOURCES = main.c config.c crypt4gh.c cli.c json.c $(wildcard jsmn/*.c)
+HEADERS = utils.h cli.h crypt4gh.h
+SOURCES = main.c cli.c crypt4gh.c
 OBJECTS = $(SOURCES:%.c=%.o)
 
 .PHONY: all clean debug1 debug2 debug3
