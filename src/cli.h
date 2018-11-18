@@ -6,16 +6,16 @@
 
 #define C4GH_VERSION "GA4GH cryptographic utilities (version 1)"
 
-/* DB schema */
-#define C4GH_USAGE "\
+#define C4GH_USAGE "\n\
+Cryptographic utility for the GA4GH encryption format.\n\
+Reads from stdin and outputs to stdout\n\
 \n\
-LocalEGA utilities for the cryptographic GA4GH standard.\n\
-Reads from stdin and Outputs to stdout\n\
+Usage: crypt4gh <command> [options...]\n\
 \n\
-Usage:\n\
-   {PROG} [-hv] [--log <file>] <help | usage>\n\
-   {PROG} [-hv] [--log <file>] version\n\
-   {PROG} [-hv] [--log <file>] <encrypt | decrypt | reencrypt | generate> [options...]\n\
+Commands:\n\
+   * help, usage, version          \n\
+   * encrypt, decrypt, reencrypt   \n\
+   * generate                      \n\
 \n\
 Options:\n\
    -h, --help               Prints the help and exits\n\
@@ -28,9 +28,9 @@ Options:\n\
    --secret_key <path>      Private Curve25519 key to be used for decryption [default: ~/.c4gh/key]\n\
    -S <path>,               \n\
    --signing_key <path>     Ed25519 Signing key for the header\n\
-   -o <path>                \n\
+   -o <path>,               \n\
    --output <path>          Private Curve25519 key (.pub is appended for the Public one) [default: ~/.c4gh/sign]\n\
-   -P <secret>              \n\
+   -P <secret>,             \n\
    --passphrase <secret>    Passphrase to lock the secret key [default: None]\n\
    -k, --signing            Generate an ed25519 signing/verifying keypair\n\
    -f <fmt>,                \n\
