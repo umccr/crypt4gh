@@ -6,7 +6,7 @@ MAIN_EXEC = crypt4gh
 
 CC=gcc
 LD=ld
-AS=gcc -c
+AS=gcc -ggdb -c
 CFLAGS=-Wall -Wstrict-prototypes -Werror -fPIC -I. -I/usr/local/include `libgcrypt-config --cflags` -O2
 LIBS=-lgpg-error -lgcrypt
 
@@ -14,8 +14,8 @@ ifdef SYSLOG
 CFLAGS += -DHAS_SYSLOG
 endif
 
-HEADERS = utils.h cli.h crypt4gh.h
-SOURCES = main.c cli.c crypt4gh.c
+HEADERS = utils.h misc.h cli.h crypt4gh.h
+SOURCES = main.c misc.c cli.c crypt4gh.c
 OBJECTS = $(SOURCES:%.c=%.o)
 
 .PHONY: all clean debug1 debug2 debug3
