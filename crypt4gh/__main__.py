@@ -11,6 +11,7 @@ from getpass import getpass
 from .engine import encrypt, decrypt, reencrypt
 from .cli import parse_args
 from .keys import generate, get_public_key, get_private_key
+from .aws import get_parameter
 
 LOG = logging.getLogger(__name__)
 
@@ -18,29 +19,34 @@ DEFAULT_PK  = os.getenv('C4GH_PUBLIC_KEY', None)
 DEFAULT_SK  = os.getenv('C4GH_SECRET_KEY', None)
 
 def run(args):
-
     # Parse CLI arguments
     args = parse_args(args)
+
+    if args['encrypt'] or args['decrypt'] or args['reencrypt']:
+        if args['--kms_secret_id']:
+            with open("pk.pem", 'w') as f:
+                f.write(get_parameter(args['--kms_secret_id']))
+            seckey = "pk.pem" #get this out of here nowwww
+            cb = partial(getpass, prompt='Passphrase for {}: '.format(os.path.basename(args["--kms_secret_id"])))
+        else:
+            seckey = args['--sk'] or DEFAULT_SK
+            if not seckey:
+                raise ValueError('Secret key not specified')
+            seckey = os.path.expanduser(seckey)
+            if not os.path.exists(seckey):
+                raise ValueError('Secret key not found')
+            cb = partial(getpass, prompt='Passphrase for {}: '.format(os.path.basename(args["--kms_secret_id"])))
+        
+        seckey = get_private_key(seckey, cb)
 
     #####################################
     ## For Encryption
     ##################################### 
     if args['encrypt']:
-
-        seckey = args['--sk'] or DEFAULT_SK
-        if not seckey:
-            raise ValueError('Secret key not specified')
-        seckey = os.path.expanduser(seckey)
-        if not os.path.exists(seckey):
-            raise ValueError('Secret key not found')
-        cb = partial(getpass, prompt='Passphrase for {}: '.format(os.path.basename(args["--sk"])))
-        seckey = get_private_key(seckey, cb)
-
         recipient_pubkey = os.path.expanduser(args['--recipient_pk'])
         if not os.path.exists(recipient_pubkey):
             raise ValueError("Recipient's Public Key not found")
         recipient_pubkey = get_public_key(recipient_pubkey)
-            
         encrypt(seckey, recipient_pubkey, sys.stdin.buffer, sys.stdout.buffer)
     
     #####################################
@@ -66,31 +72,12 @@ def run(args):
             kw['start_coordinate'] = start
             kw['end_coordinate'] = end
 
-        seckey = args['--sk'] or DEFAULT_SK
-        if not seckey:
-            raise ValueError('Secret key not specified')
-        seckey = os.path.expanduser(seckey)
-        if not os.path.exists(seckey):
-            raise ValueError('Secret key not found')
-        cb = partial(getpass, prompt='Passphrase for {}: '.format(os.path.basename(args["--sk"])))
-        seckey = get_private_key(seckey, cb)
-
         decrypt(seckey, sys.stdin.buffer, sys.stdout.buffer, **kw)
 
     #####################################
     ## For ReEncryption
     #####################################
     if args['reencrypt']:
-
-        seckey = args['--sk'] or DEFAULT_SK
-        if not seckey:
-            raise ValueError('Secret key not specified')
-        seckey = os.path.expanduser(seckey)
-        if not os.path.exists(seckey):
-            raise ValueError('Secret key not found')
-        cb = partial(getpass, prompt='Passphrase for {}: '.format(os.path.basename(args["--sk"])))
-        seckey = get_private_key(seckey, cb)
-
         recipient_pubkey = get_public_key(os.path.expanduser(args['--recipient_pk']))
         sender_pubkey = get_public_key(os.path.expanduser(args['--sender_pk'])) if args['--sender_pk'] else None
 
