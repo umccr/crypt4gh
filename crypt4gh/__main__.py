@@ -17,16 +17,20 @@ LOG = logging.getLogger(__name__)
 
 DEFAULT_PK  = os.getenv('C4GH_PUBLIC_KEY', None)
 DEFAULT_SK  = os.getenv('C4GH_SECRET_KEY', None)
+tmp_pk_file = "pk.pem"
 
 def run(args):
     # Parse CLI arguments
     args = parse_args(args)
 
+    #####################################
+    ## Retrieve private key
+    ##################################### 
     if args['encrypt'] or args['decrypt'] or args['reencrypt']:
         if args['--kms_secret_id']:
-            with open("pk.pem", 'w') as f:
+            with open("pk.pem", 'w') as f: 
                 f.write(get_parameter(args['--kms_secret_id']))
-            seckey = "pk.pem" #get this out of here nowwww
+            seckey = tmp_pk_file
             cb = partial(getpass, prompt='Passphrase for {}: '.format(os.path.basename(args["--kms_secret_id"])))
         else:
             seckey = args['--sk'] or DEFAULT_SK
@@ -35,9 +39,14 @@ def run(args):
             seckey = os.path.expanduser(seckey)
             if not os.path.exists(seckey):
                 raise ValueError('Secret key not found')
-            cb = partial(getpass, prompt='Passphrase for {}: '.format(os.path.basename(args["--kms_secret_id"])))
+            cb = partial(getpass, prompt='Passphrase for {}: '.format(os.path.basename(args["--sk"])))
         
         seckey = get_private_key(seckey, cb)
+
+        try:
+            os.remove(tmp_pk_file) #nuke temporary keyfile if it exists
+        except OSError:
+            pass
 
     #####################################
     ## For Encryption
@@ -95,9 +104,8 @@ def run(args):
                 if os.path.isfile(k):
                     yn = input(f'{k} already exists. Do you want to overwrite it? (y/n) ')
                     if yn != 'y':
-                        print('Ok. Fair enough. Exiting.')
-                        #sys.exit(0)
-                        return
+                        LOG.error('Ok. Fair enough. Exiting.')
+                        sys.exit(0)
                 
         do_crypt = not args['--nocrypt']
         cb = partial(getpass, prompt=f'Passphrase for {args["--sk"]}: ') if do_crypt else None
@@ -111,10 +119,6 @@ def main(args=sys.argv[1:]):
         run(args)
     except KeyboardInterrupt:
         pass
-    # except Exception as e:
-    #     _, _, exc_tb = sys.exc_info()
-    #     traceback.print_tb(exc_tb, file=sys.stderr)
-    #     sys.exit(1)
 
 if __name__ == '__main__':
     main()
