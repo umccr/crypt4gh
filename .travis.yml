@@ -11,7 +11,7 @@ jobs:
     script:
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
     - docker build -t $IMAGE_NAME:$TRAVIS_BUILD_NUMBER .
-    - docker tag $IMAGE_NAME:$TRAVIS_BUILD_NUMBER wandergeek/telotest:latest
+    - docker tag $IMAGE_NAME:$TRAVIS_BUILD_NUMBER $IMAGE_NAME:latest
     - docker images
     - docker push $IMAGE_NAME:${TRAVIS_BUILD_NUMBER}
     - docker push $IMAGE_NAME:latest
