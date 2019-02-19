@@ -6,35 +6,37 @@ import ed25519
 from nacl.public import PrivateKey, PublicKey
 from nacl.encoding import HexEncoder as KeyFormatter
 
-from crypt4gh.crypt4gh import encrypt, decrypt, reencrypt, Header
+import crypt4gh
+# target = __import__("crypt4gh")
+
 
 from . import data as test_data
 
-class TestCrypt4GH(unittest.TestCase):
-    """Crypt4GH
 
-    Testing Crypt4GH encryption/decryption and reencryption."""
 
-    @tempdir()
-    def test_encrypt(self, filedir):
-        """Testing Crypt4GH encryption, encrypted file should have the necessary header."""
-        infile = filedir.write('file.in', test_data.ORG_FILE)
-        pubkey = PublicKey(test_data.PUBKEY_HEX, KeyFormatter)
-        with open('file.in', 'rb') as inf, open('file.out', 'wb') as outf:
-            encrypt(inf, outf, pubfile)
-        compare(dir.read('file.out'), bytes.fromhex(test_data.ENC_FILE_HEX))
-        filedir.cleanup()
+@tempdir()
+def test_encrypt(filedir):
+    # """Testing Crypt4GH encryption, encrypted file should have the necessary header."""
+    infile = filedir.write('file.in', test_data.ORG_FILE)
+    pubkey = PublicKey(test_data.PUBKEY_HEX, KeyFormatter)
+    with open('file.in', 'rb') as inf, open('file.out', 'wb') as outf:
+        crypt4gh.encrypt(inf, outf, pubkey)
+    compare(dir.read('file.out'), bytes.fromhex(test_data.ENC_FILE_HEX))
+    filedir.listdir()
+    filedir.cleanup()
 
-    @tempdir()
-    def test_encrypt_signed(self, filedir):
-        """Testing Crypt4GH encryption, encrypted file should have the necessary header."""
-        infile = filedir.write('file.in', test_data.ORG_FILE)
-        pubkey = PublicKey(test_data.PUBKEY_HEX, KeyFormatter)
-        signing_key = ed25519.SigningKey(bytes.fromhex(test_data.SIGNING_KEY_HEX))
-        with open('file.in', 'rb') as inf, open('file.out', 'wb') as outf:
-            encrypt(inf, outf, pubfile, signing_key=signing_key)
-        compare(dir.read('file.out'), bytes.fromhex(test_data.ENC_FILE_HEX))
-        filedir.cleanup()
+    
+
+# @tempdir()
+# def test_encrypt_signed(self, filedir):
+#     """Testing Crypt4GH encryption, encrypted file should have the necessary header."""
+#     infile = filedir.write('file.in', test_data.ORG_FILE)
+#     pubkey = PublicKey(test_data.PUBKEY_HEX, KeyFormatter)
+#     signing_key = ed25519.SigningKey(bytes.fromhex(test_data.SIGNING_KEY_HEX))
+#     with open('file.in', 'rb') as inf, open('file.out', 'wb') as outf:
+#         encrypt(inf, outf, pubfile, signing_key=signing_key)
+#     compare(dir.read('file.out'), bytes.fromhex(test_data.ENC_FILE_HEX))
+#     filedir.cleanup()
 
     # @tempdir()
     # def test_decrypt(self, filedir):

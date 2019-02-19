@@ -77,3 +77,15 @@ $ crypt4gh decrypt --sk alice.sec < file.c4gh
 ## File Format
 
 Refer to the [specifications](docs/static/crypt4gh.pdf) or this [documentation](https://crypt4gh.readthedocs.io/en/latest/encryption.html).
+
+## Travis
+This build is automatically built on travis. Artifacts are shipped to dockerhub at umccr/crypt4gh. 
+
+### Secrets
+Setting up secrets for travis was annoying. This is the procedure I went thru should secrets need to be regenerated:
+
+```
+travis login --pro
+travis encrypt DOCKER_PASSWORD=<my cool secret> --add --com
+```
+
