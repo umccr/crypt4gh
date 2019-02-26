@@ -14,6 +14,8 @@ from .keys import generate, get_public_key, get_private_key
 from .aws import get_parameter
 
 LOG = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
+
 
 DEFAULT_PK  = os.getenv('C4GH_PUBLIC_KEY', None)
 DEFAULT_SK  = os.getenv('C4GH_SECRET_KEY', None)
